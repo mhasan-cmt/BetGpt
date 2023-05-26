@@ -1,4 +1,4 @@
-package com.ubetgpt.betgpt;
+package com.ubetgpt.betgpt.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
