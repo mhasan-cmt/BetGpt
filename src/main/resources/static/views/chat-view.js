@@ -45,7 +45,7 @@ class ChatView extends HTMLElement {
     this.#chatID = this.getAttribute('chat-id')
 
     //this.#apiKey = localStorage.getItem(this.#lsKeyName)
-    this.#apiKey = "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";
+    this.#apiKey = "jasdfasdf";
     //this.#orgID = localStorage.getItem(this.#lsOrgIDName)
     this.#orgID = "";
 

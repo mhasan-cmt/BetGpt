@@ -34,8 +34,8 @@
 export class OpenAI {
   static GPT3Dot5Turbo = 'gpt-3.5-turbo'
 
-  baseURL = 'https://api.openai.com/v1'
-  apiKey = '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'
+  baseURL = 'http://localhost:8080'
+  apiKey = ''
   organizationID = ''
 
   constructor (apiKey, organizationID) {
@@ -52,7 +52,6 @@ export class OpenAI {
 
   #getHeaders () {
     const headers = {
-      'Authorization': `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json'
     }
 
