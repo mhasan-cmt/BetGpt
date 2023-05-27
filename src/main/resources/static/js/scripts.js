@@ -23,6 +23,7 @@ const loadDataFromLocalStorage = () => {
         : 'light_mode';
     const defaultChat = `
   <div class="default-text">
+  <image src="/img/betgptImage.png" alt="betgpt" />
   <h1>betGpt Beta</h1>
   <p>Hi, I'm betGpt Beta. I'm here to help you with your queries.</p>
   </div>
@@ -55,7 +56,7 @@ const showTypingAnimation = () => {
     const html = `
     <div class="chat-content">
           <div class="chat-details">
-            <img src="./image/chatbot.jpg" alt="user-img" />
+            <img src="/img/betgptImage.png" alt="user-img" />
             <div class="typing-animation">
               <div class="typing-dot" style="--delay: 0.2s"></div>
               <div class="typing-dot" style="--delay: 0.3s"></div>
@@ -79,7 +80,7 @@ const handleOutgoingChat = () => {
     const html = `
     <div class="chat-content">
           <div class="chat-details">
-            <img src="./image/user.jpg" alt="user-img" />
+            <img src="/img/user.jpg" alt="user-img" />
             <p></p>
           </div>
         </div>

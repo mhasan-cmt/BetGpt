@@ -89,6 +89,11 @@ body {
     color: var(--text-color);
 }
 
+.default-text img{
+    max-height: 6rem;
+
+}
+
 .default-text h1 {
     font-size: 3.3rem;
 }
@@ -104,7 +109,7 @@ body {
     visibility: hidden;
 }
 
-.chat:hover .chat-content:not(:has(.typing-animation)) span {
+.chat:hover .chat-content:not(:has(.typing-animation, .error)) span {
     visibility: visible;
 }
 
