@@ -4,15 +4,29 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content=" " width="device-width" , initial-scale="1.0"/>
     <title>betGpt | Beta</title>
+    <link rel="stylesheet" th:href="@{/css/highlight.css}">
+
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
     <!-- Loogle Fonts Link For Icons -->
     <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
     />
+    <script th:src="@{/js/highlight.js}"></script>
+    <script>hljs.highlightAll();</script>
+    <script th:src="@{/js/marked.min.js}"></script>
     <script th:src="@{/js/scripts.js}" defer></script>
 </head>
 <body>
+<nav>
+    <div class="nav-container">
+        <div class="nav-content">
+            <div class="nav-title">
+                <h1>betGpt</h1>
+            </div>
+        </div>
+    </div>
+</nav>
 <div class="chat-container"></div>
 
 <div class="typing-container">

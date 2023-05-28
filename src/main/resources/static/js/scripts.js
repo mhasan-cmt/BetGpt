@@ -30,19 +30,44 @@ const loadDataFromLocalStorage = () => {
   `;
     chatContainer.innerHTML = localStorage.getItem('chat-history') || defaultChat;
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
+    if (!chatContainer.querySelector('.default-text')) {
+        document.querySelector('nav').style.display = 'block';
+    }else{
+        document.querySelector('nav').style.display = 'none';
+    }
 };
 
 loadDataFromLocalStorage();
 
 /// TODO: Call API
 const getChatResponse = async (incomingChatDiv) => {
-    const pElement = document.createElement('p');
-    incomingChatDiv.querySelector('.typing-animation').remove();
-    pElement.textContent = 'Hello';
-    // pElement.textContent = await getResponse(userText);
-    incomingChatDiv.querySelector('.chat-details').appendChild(pElement);
+    let pElement = null;
+    let divElement = document.createElement('div');
+    const requestData = {
+        "message": userText
+    }
+    fetch("/chat", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+        .then(response => response.json()) // Parse the response as JSON
+        .then(data => {
+            // Handle the response data
+            incomingChatDiv.querySelector('.typing-animation').remove();
+            pElement =  markdownToHtml(data.choices[0].message.content.trim())
+            divElement.innerHTML = pElement;
+            incomingChatDiv.querySelector('.chat-details').appendChild(divElement);
+            hljs.highlightAll();
+            localStorage.setItem('chat-history', chatContainer.innerHTML);
+        })
+        .catch(error => {
+            // Handle any errors
+            pElement.textContent = 'Sorry, I am not able to process your request at the moment. Please try again later.';
+        });
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    localStorage.setItem('chat-history', chatContainer.innerHTML);
 };
 
 const copyResponse = (copyButton) => {
@@ -63,7 +88,7 @@ const showTypingAnimation = () => {
               <div class="typing-dot" style="--delay: 0.4s"></div>
             </div>
           </div>
-          <span onclick="copyResponse(this)" class="material-symbols-outlined">content_copy</span>
+          <span onclick="copyResponse(this)" class="material-symbols-outlined copy-btn">content_copy</span>
         </div>
     `;
     const incomingChatDiv = createElement(html, 'incoming');
@@ -88,9 +113,14 @@ const handleOutgoingChat = () => {
     const outgoingChatDiv = createElement(html, 'outgoing');
     document.querySelector('.default-text')?.remove();
     outgoingChatDiv.querySelector('p').textContent = userText;
+    if (!chatContainer.querySelector('.default-text')) {
+        document.querySelector('nav').style.display = 'block';
+    }else{
+        document.querySelector('nav').style.display = 'none';
+    }
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    setTimeout(showTypingAnimation, 500);
+    setTimeout(showTypingAnimation, 1000);
 };
 
 themeButton.addEventListener('click', () => {
@@ -121,3 +151,7 @@ deleteButton.addEventListener('click', () => {
         loadDataFromLocalStorage();
     }
 });
+
+const markdownToHtml = (markdown) => {
+    return marked.parse(markdown);
+};

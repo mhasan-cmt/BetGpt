@@ -5,10 +5,8 @@ import com.ubetgpt.betgpt.model.chat.ChatMessage;
 import com.ubetgpt.betgpt.model.chat.ChatResponse;
 import com.ubetgpt.betgpt.service.ChatCompletionService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +22,18 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/chat")
-    public String chatPage(){
+    @PostMapping("chat")
+    @ResponseBody
+    public ChatResponse chatPage(@RequestBody String prompt){
         ChatCompletionRequest request = new ChatCompletionRequest();
         request.setModel(model);
 
         List<ChatMessage> messages = new ArrayList<>();
-        messages.add(new ChatMessage("user", "How can i learn java!"));
+        messages.add(new ChatMessage("user", prompt));
         request.setMessages(messages);
 
         ChatResponse response = chatCompletionService.createChatCompletion(request);
         System.out.println(response);
-        return "index";
+        return response;
     }
 }

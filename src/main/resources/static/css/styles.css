@@ -17,6 +17,8 @@
     --incoming-chat-bg: #444654;
     --outgoing-chat-border: #343541;
     --incoming-chat-border: #444654;
+    --nav-bg: #ffffff;
+    --nav-text-color: #343541;
 }
 
 .light-mode {
@@ -28,10 +30,28 @@
     --incoming-chat-bg: #f7f7f8;
     --outgoing-chat-border: #ffffff;
     --incoming-chat-border: #d9d9e3;
+    --nav-bg: #444654;
+    --nav-text-color: #ffffff;
 }
 
 body {
     background-color: var(--outgoing-chat-bg);
+}
+nav{
+    display: none;
+}
+.nav-container{
+    background: var(--nav-bg);
+}
+.nav-container .nav-content .nav-title{
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+    padding: 1rem 0;
+}
+.nav-container .nav-content .nav-title h1{
+    color: var(--nav-text-color);
 }
 
 .chat-container {
@@ -89,7 +109,7 @@ body {
     color: var(--text-color);
 }
 
-.default-text img{
+.default-text img {
     max-height: 6rem;
 
 }
@@ -103,13 +123,13 @@ body {
     margin-top: 10px;
 }
 
-.chat .chat-content span {
+.chat .chat-content span.copy-btn {
     font-size: 1.03rem;
     color: var(--icon-color);
     visibility: hidden;
 }
 
-.chat:hover .chat-content:not(:has(.typing-animation, .error)) span {
+.chat:hover .chat-content:not(:has(.typing-animation, .error)) span.copy-btn {
     visibility: visible;
 }
 
@@ -118,9 +138,16 @@ body {
     align-items: center;
 }
 
+
 .chat .chat-details p {
     font-size: 1.05rem;
     padding: 0 50px 0 25px;
+}
+
+.chat .chat-details div pre code.hljs {
+    margin-left: 1rem;
+    margin-top: .5rem;
+    margin-bottom: .6rem;
 }
 
 .chat-container .chat-details img {
