@@ -25,8 +25,10 @@
         <div class="left-side"></div>
         <div class="right-side">
             <h1>Hi There!<br> Welcome to betGPT</h1>
-            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span>Sign in with Google</button>
-            <div class="separator"> or </div>
+            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span>Sign in with
+                Google
+            </button>
+            <div class="separator"> or</div>
             <form>
                 <input type="email" placeholder="Your Email" required>
                 <input type="password" placeholder="Your Password" required>
@@ -46,17 +48,61 @@
                 <p>Unlimited Predictions. Ask anything, <br> and Tom will always answer</p>
             </div>
             <div class="bottom">
+                <div class="plans">
+                    <label class="plan basic-plan" for="basic">
+                        <input checked type="radio" name="plan" id="basic"/>
+                        <div class="plan-content">
+                            <div class="plan-details">
+                                <span>$24 / month</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="plan complete-plan" for="complete">
+                        <input type="radio" id="complete" name="plan"/>
+                        <div class="plan-content">
+                            <div class="plan-details">
+                                <span>$200 / year</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                <div class="feature-list">
+                    <ul>
+                        <li><span class="material-symbols-outlined">offline_pin</span>Ask sports game prediction
+                        </li>
+                        <li><span class="material-symbols-outlined">offline_pin</span> Ask sports game prediction</li>
+                        <li><span class="material-symbols-outlined">offline_pin</span> Ask sports game prediction</li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="right-side">
             <h1>Payment Details</h1>
-            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span>Sign in with Google</button>
-            <div class="separator"> or </div>
+            <div class="card-icons">
+                <img src="/img/debit-card.png"/>
+                <img src="/img/debit-card.png"/>
+            </div>
+            <div class="separator"> Card Information </div>
             <form>
-                <input type="email" placeholder="Your Email" required>
-                <input type="password" placeholder="Your Password" required>
-                <div class="forgot-password">Forgot password?</div>
-                <button type="submit" class="button btn-100 login-btn">Login</button>
+                <label>Card Holder Name</label>
+                <input type="text" placeholder="Name on Credit/debit card" required>
+                <label>Card Card Number</label>
+                <input type="number" placeholder="xxxx xxxx xxxx xxxx" required>
+                <div style="display:flex;">
+                    <div style="margin-right: 1rem">
+                        <label>Expiry Date</label>
+                        <div style="display: flex">
+                            <input type="number" placeholder="MM" required style="margin-right: .5rem">
+                            <input type="number" placeholder="YY" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label>CVV</label>
+                        <input type="password" placeholder="123" required>
+                    </div>
+                </div>
+                <button type="submit" class="button btn-100 pay-btn">Pay Now</button>
             </form>
         </div>
     </div>
