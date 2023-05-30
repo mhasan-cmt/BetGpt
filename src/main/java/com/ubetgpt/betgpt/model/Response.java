@@ -1,4 +1,4 @@
-package com.ubetgpt.betgpt.model.chat;
+package com.ubetgpt.betgpt.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,10 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
-    public String role;
-    public String content;
+@ToString
+public class Response {
+    private boolean status;
+    private String details;
+
 }

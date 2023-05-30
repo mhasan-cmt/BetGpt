@@ -6,6 +6,19 @@ const deleteButton = document.querySelector('#delete-btn');
 
 let userText = null;
 const initialHeight = chatInput.scrollHeight;
+function typeWriter(container, text, speed) {
+    var i = 0;
+
+    function type() {
+        if (i < text.length) {
+            container.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+
+    type();
+}
 
 const createElement = (html, className) => {
     const chatDiv = document.createElement('div');
@@ -25,16 +38,11 @@ const loadDataFromLocalStorage = () => {
   <div class="default-text">
   <image src="/img/betgptImage.png" alt="betgpt" />
   <h1>betGpt Beta</h1>
-  <p>Hi, I'm betGpt Beta. I'm here to help you with your queries.</p>
+  <p>God does not play dice with the universe. Neither do I</p>
   </div>
   `;
     chatContainer.innerHTML = localStorage.getItem('chat-history') || defaultChat;
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    if (!chatContainer.querySelector('.default-text')) {
-        document.querySelector('nav').style.display = 'block';
-    }else{
-        document.querySelector('nav').style.display = 'none';
-    }
 };
 
 loadDataFromLocalStorage();
@@ -57,15 +65,25 @@ const getChatResponse = async (incomingChatDiv) => {
         .then(data => {
             // Handle the response data
             incomingChatDiv.querySelector('.typing-animation').remove();
+            // add a line break before dan's response
             pElement =  markdownToHtml(data.choices[0].message.content.trim())
             divElement.innerHTML = pElement;
+            divElement.classList.add('chat-response-div');
             incomingChatDiv.querySelector('.chat-details').appendChild(divElement);
             hljs.highlightAll();
             localStorage.setItem('chat-history', chatContainer.innerHTML);
+            chatInput.value = '';
+            chatInput.readOnly = false;
         })
         .catch(error => {
             // Handle any errors
             pElement.textContent = 'Sorry, I am not able to process your request at the moment. Please try again later.';
+            pElement.style.color = 'red';
+            divElement.innerHTML = pElement;
+            incomingChatDiv.querySelector('.chat-details').appendChild(divElement);
+            localStorage.setItem('chat-history', chatContainer.innerHTML);
+            chatInput.value = '';
+            chatInput.readOnly = false;
         });
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 };
@@ -78,6 +96,8 @@ const copyResponse = (copyButton) => {
 };
 
 const showTypingAnimation = () => {
+    chatInput.value = 'Generating response...';
+    chatInput.readOnly = true;
     const html = `
     <div class="chat-content">
           <div class="chat-details">
@@ -99,6 +119,8 @@ const showTypingAnimation = () => {
 
 const handleOutgoingChat = () => {
     userText = chatInput.value.trim();
+    chatInput.value = 'Generating response...';
+    chatInput.readOnly = true;
     if (!userText) return;
     chatInput.value = '';
     chatInput.style.height = `${initialHeight}px`;
@@ -113,11 +135,6 @@ const handleOutgoingChat = () => {
     const outgoingChatDiv = createElement(html, 'outgoing');
     document.querySelector('.default-text')?.remove();
     outgoingChatDiv.querySelector('p').textContent = userText;
-    if (!chatContainer.querySelector('.default-text')) {
-        document.querySelector('nav').style.display = 'block';
-    }else{
-        document.querySelector('nav').style.display = 'none';
-    }
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
     setTimeout(showTypingAnimation, 1000);
@@ -155,3 +172,21 @@ deleteButton.addEventListener('click', () => {
 const markdownToHtml = (markdown) => {
     return marked.parse(markdown);
 };
+const openSignInModal = () => {
+    document.getElementById("signInModal").style.display = "block";
+};
+const closeSignInModal = () => {
+document.getElementById("signInModal").style.display = "none";
+};
+
+const closePaymentModal = () => {
+    document.getElementById("paymentModal").style.display = "none";
+};
+const openPaymentModal = () => {
+    document.getElementById("paymentModal").style.display = "block";
+};
+document.querySelector(".modalContainer").addEventListener("click", function(event) {
+    if (event.target === this) {
+        this.style.display = "none";
+    }
+});

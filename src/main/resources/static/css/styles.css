@@ -12,9 +12,11 @@
     --text-color: #ffffff;
     --icon-color: #acacbe;
     --icon-hover-bg: #5b5e71;
+    --btn-color-success: #083107;
+    --btn-color-success-hover: #0c480b;
     --placeholder-color: #cccccc;
     --outgoing-chat-bg: #343541;
-    --incoming-chat-bg: #444654;
+    --incoming-chat-bg: #35353f;
     --outgoing-chat-border: #343541;
     --incoming-chat-border: #444654;
     --nav-bg: #ffffff;
@@ -25,6 +27,8 @@
     --text-color: #343541;
     --icon-color: #a9a9bc;
     --icon-hover-bg: #f1f1f3;
+    --btn-color-success: #083107;
+    --btn-color-success-hover: #0c480b;
     --placeholder-color: #9f9f9f;
     --outgoing-chat-bg: #ffffff;
     --incoming-chat-bg: #f7f7f8;
@@ -37,11 +41,12 @@
 body {
     background-color: var(--outgoing-chat-bg);
 }
-nav{
-    display: none;
-}
-.nav-container{
+.nav-container .nav-content{
     background: var(--nav-bg);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
 .nav-container .nav-content .nav-title{
     font-size: 1.2rem;
@@ -49,6 +54,23 @@ nav{
     color: var(--text-color);
     text-align: center;
     padding: 1rem 0;
+    margin-left: 1rem;
+}
+.nav-container .nav-content .nav-buttons{
+    margin-right: 1rem;
+}
+.nav-container .nav-content .nav-buttons ul{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+}
+.nav-container .nav-content .nav-buttons ul li{
+    margin: 0 0.5rem;
+}
+.nav-container .nav-content .nav-buttons ul li a{
+    text-decoration: none;
 }
 .nav-container .nav-content .nav-title h1{
     color: var(--nav-text-color);
@@ -267,3 +289,210 @@ span.material-symbols-outlined {
     background: var(--incoming-chat-bg);
     border: 1px solid var(--incoming-chat-border);
 }
+/*UTILs*/
+.button {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+.button:hover {
+    transform: translateY(-4px);
+}
+.button.button-secondary {
+    background-color: var(--icon-color);
+    color: #fff;
+    border: 1px solid var(--icon-hover-bg);
+}
+.button.button-primary {
+    border: none;
+    background-color: var(--btn-color-success);
+    color: #fff;
+}
+
+.button.button-secondary:hover {
+    background-color: var(--icon-hover-bg);
+    color: var(--icon-color);
+}
+
+.button.button-primary:hover {
+    background-color: var(--btn-color-success-hover);
+    color: var(--icon-color);
+}
+/*Sign in Modal*/
+/* Modal Styles */
+.modalContainer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modalContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    max-width: 720px;
+    height: 600px;
+    background-color: #FFFFFF;
+    margin: 0 auto;
+    border-radius: 15px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+.left-side {
+    width: 30%;
+    height: 100%;
+    position: relative;
+    background-image: url("/img/signin-cover.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+.left-side,
+.left-side::before{
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+.left-side::before {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: inherit;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.left-side img {
+    width: 100%;
+    height: 100%;
+}
+
+.right-side {
+    width: 70%;
+    padding: 0 3rem;
+}
+.right-side h1{
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+.google-signin {
+    background-color: #ffffff;
+    font-weight: 600;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.google-signin span{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.google-signin span img{
+    width: 2rem;
+    height:2rem;
+    margin-right: 10px;
+}
+.login-btn {
+    background-color: rgb(0, 0, 0);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 1rem 0;
+}
+
+.btn-100 {
+    width: 100%;
+}
+
+.modalContent form input {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+}
+
+.forgot-password {
+    text-align: right;
+    margin-bottom: 20px;
+    color: #4285F4;
+    cursor: pointer;
+}
+
+/* Show/hide modal animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.closeModal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #999999;
+    cursor: pointer;
+}
+
+.closeModal:hover {
+    color: #666666;
+}
+
+.separator {
+    text-align: center;
+    margin: 2rem 0;
+    color: #999999;
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    display: inline-block;
+    width: 10%;
+    height: 1px;
+    background-color: #999999;
+    vertical-align: middle;
+}
+
+.separator::before {
+    margin-right: 10px;
+}
+
+.separator::after {
+    margin-left: 10px;
+}
+
+.chat-response-div p:first-child{
+    margin-bottom: 1rem;
+}
+
