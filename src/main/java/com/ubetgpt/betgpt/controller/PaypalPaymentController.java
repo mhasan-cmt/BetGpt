@@ -7,22 +7,24 @@ import com.ubetgpt.betgpt.enums.PaymentModeEnum;
 import com.ubetgpt.betgpt.model.Order;
 import com.ubetgpt.betgpt.persistence.entity.PaymentInfo;
 import com.ubetgpt.betgpt.service.PaypalPaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDateTime;
+
+import static com.ubetgpt.betgpt.enums.SubscriptionPackage.MONTHLY;
 
 @Controller
 @RequestMapping("/paypalPayment")
 public class PaypalPaymentController {
 
-    @Autowired
+    @Resource
     PaypalPaymentService paypalPaymentService;
 
     public static final String SUCCESS_URL = "success";
@@ -34,12 +36,15 @@ public class PaypalPaymentController {
     }
 
     @PostMapping("/makePayment")
-    public RedirectView payment(@RequestParam("amount") String amount,
-                                @RequestParam("currency") String currency,
+    public RedirectView payment(@RequestParam("subscription_package") String subscriptionPackage,
                                 @RequestParam("description") String description) {
         Order order = new Order();
-        order.setAmount(Double.valueOf(amount));
-        order.setCurrency(currency);
+        if (subscriptionPackage.equals(MONTHLY)){
+            order.setAmount(24.0);
+        }else {
+            order.setAmount(200.0);
+        }
+        order.setCurrency("USD");
         order.setMethod("paypal");
         order.setIntent("sale");
         order.setDescription(description);
@@ -60,11 +65,9 @@ public class PaypalPaymentController {
     }
 
     @GetMapping(value = SUCCESS_URL)
-    public ModelAndView successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
-        ModelAndView model = new ModelAndView();
+    public String successPay(Model model,@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
         try {
             Payment payment = paypalPaymentService.executePayment(paymentId, payerId);
-//            System.out.println(payment.toJSON());
             if (payment.getState().equals("approved")) {
                 PaymentInfo paymentInfo = new PaymentInfo();
                 paymentInfo.setPaymentMode(PaymentModeEnum.PAYPAL.name());
@@ -76,21 +79,21 @@ public class PaypalPaymentController {
                 paymentInfo.setCreated(LocalDateTime.now());
                 paypalPaymentService.savePaymentInfo(paymentInfo);
 
-                model.setViewName("success");
-                model.addObject("transactionId", payment.getId());
+                model.addAttribute("message", "Payment successfully");
+                model.addAttribute("transactionId", payment.getId());
             } else {
-                model.setViewName("failed");
+                model.addAttribute("message", "Payment failed");
             }
         } catch (PayPalRESTException e) {
             System.out.println(e.getMessage());
         }
-        return model;
+        return "index";
     }
 
     @GetMapping(value = CANCEL_URL)
-    public String getCancelUrl() {
-        return "cancel";
+    public String getCancelUrl(Model model) {
+        model.addAttribute("message", "Payment cancelled");
+        return "index";
     }
-
 
 }

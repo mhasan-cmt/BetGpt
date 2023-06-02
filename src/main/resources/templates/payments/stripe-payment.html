@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>PayPal Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 17px;
+            padding: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: -ms-flexbox; /* IE10 */
+            display: flex;
+            -ms-flex-wrap: wrap; /* IE10 */
+            flex-wrap: wrap;
+            margin: 0 -16px;
+        }
+
+        .col-25 {
+            -ms-flex: 25%; /* IE10 */
+            flex: 25%;
+        }
+
+        .col-50 {
+            -ms-flex: 50%; /* IE10 */
+            flex: 50%;
+        }
+
+        .col-75 {
+            -ms-flex: 75%; /* IE10 */
+            flex: 75%;
+        }
+
+        .col-25,
+        .col-50,
+        .col-75 {
+            padding: 0 16px;
+        }
+
+        .container {
+            background-color: #f2f2f2;
+            padding: 5px 20px 15px 20px;
+            border: 1px solid lightgrey;
+            border-radius: 3px;
+        }
+
+        input[type=text] {
+            width: 40%;
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        select{
+            width: 40%;
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        label {
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .icon-container {
+            margin-bottom: 20px;
+            padding: 7px 0;
+            font-size: 24px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            width: 20%;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            color: #2196F3;
+        }
+
+        hr {
+            border: 1px solid lightgrey;
+        }
+
+        span.price {
+            float: right;
+            color: grey;
+        }
+
+        /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (also change the direction - make the "cart" column go on top) */
+        @media (max-width: 800px) {
+            .row {
+                flex-direction: column-reverse;
+            }
+            .col-25 {
+                margin-bottom: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="row">
+    <div class="col-50">
+        <div class="container">
+            <section class="py-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8 col-12 my-auto mx-auto">
+                            <h1>
+                                Stripe Payment
+                            </h1>
+                            <p class="lead mb-4">
+                                Please fill the form below to complete the order payment
+                            </p>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5>Total Amount</h5>
+                                    <!--                        <p class="lead" id="amount" value="999">USD 9.99</p>-->
+                                    <input type="text" class="lead" id="amount" placeholder="9.99"/> USD
+                                </div>
+                            </div>
+                            <form action="#" id="payment-form" method="post">
+                                <input id="api-key" type="hidden" th:value="${stripePublicKey}">
+                                <div class="form-group">
+                                    <label class="font-weight-medium" for="card-element">
+                                        Enter credit or debit card below
+                                    </label>
+                                    <div class="w-100" id="card-element">
+                                        <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" id="email" name="email"
+                                           placeholder="Email Address" type="email" required>
+                                </div>
+                                <!-- Used to display Element errors. -->
+                                <div class="text-danger w-100" id="card-errors" role="alert"></div>
+                                <div class="form-group pt-2">
+                                    <button class="btn btn-primary btn-block" id="submitButton" style="width: 40%" type="submit">
+                                        Pay With Your Card
+                                    </button>
+                                </div>
+                                <div class="form-group pt-2" id="msg">
+
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="col-25">
+        <div class="container">
+            <h4>Menu</h4>
+            <p><a href="/paypalPayment/view">Make Paypal Payment</a></p>
+            <p><a href="/stripePayment/view">Make Stripe Payment</a></p>
+            <hr>
+        </div>
+    </div>
+
+</div>
+<script>
+    $(function () {
+        var API_KEY = $('#api-key').val();
+        // Create a Stripe client.
+        var stripe = Stripe(API_KEY);
+
+        // Create an instance of Elements.
+        var elements = stripe.elements();
+
+        // Create an instance of the card Element.
+        var card = elements.create('card');
+
+        // Add an instance of the card Element into the `card-element` <div>.
+        card.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element.
+        card.addEventListener('change', function (event) {
+            var displayError = document.getElementById('card-errors');
+            debugger;
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Handle form submission.
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            // handle payment
+            handlePayments();
+        });
+
+        //handle card submission
+        function handlePayments() {
+            stripe.createToken(card).then(function (result) {
+                if (result.error) {
+                    // Inform the user if there was an error.
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Send the token to your server.
+                    var token = result.token.id;
+                    var email = $('#email').val();
+                    var amount = $('#amount').val();
+                    debugger;
+                    $.post("/stripePayment/makePayment", {email: email, amount: amount, token: token},
+                        function (data) {
+                            $('#msg').text(data.details).css('color:green');
+                            card.clear();
+                            $('#amount').val('');
+                            $('#email').val('');
+                        }, 'json');
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -2,11 +2,14 @@ package com.ubetgpt.betgpt.controller;
 
 import com.ubetgpt.betgpt.model.chat.*;
 import com.ubetgpt.betgpt.service.ChatCompletionService;
+import com.ubetgpt.betgpt.service.StripePaymentService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,11 +26,13 @@ public class MainController {
     private String model;
     @Value("${openai.danmode-msg}")
     private String danModeMsg;
+    @Value("${stripe.keys.public}")
+    private String stripePublicKey;
     @GetMapping
-    public String homePage(){
+    public String homePage(Model model){
+        model.addAttribute("stripePublicKey",stripePublicKey);
         return "index";
     }
-
     @PostMapping("chat")
     @ResponseBody
     public ChatResponse chatPage(@RequestBody String prompt){

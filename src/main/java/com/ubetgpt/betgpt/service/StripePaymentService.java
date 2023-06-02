@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.ubetgpt.betgpt.enums.SubscriptionPackage.MONTHLY;
+
 @Slf4j
 @Service
 public class StripePaymentService {
@@ -22,12 +24,16 @@ public class StripePaymentService {
     @Resource
     PaymentInfoRepository paymentInfoRepository;
 
-    public String createCharge(String email, String token, long amount) {
+    public String createCharge(String email, String token, String subscriptionPackage) {
         String id = null;
         try {
             Stripe.apiKey = API_PRIVATE_KEY;
             Map<String, Object> chargeParams = new HashMap<>();
-            chargeParams.put("amount", amount);
+            if (subscriptionPackage.equals(MONTHLY)) {
+                chargeParams.put("amount", 24.0);
+            } else {
+                chargeParams.put("amount", 200.0);
+            }
             chargeParams.put("currency", "usd");
             chargeParams.put("description", "Charge for " + email);
             chargeParams.put("source", token);
@@ -41,7 +47,7 @@ public class StripePaymentService {
         return id;
     }
 
-    public void savePaymentInfo(PaymentInfo paymentInfo){
+    public void savePaymentInfo(PaymentInfo paymentInfo) {
         paymentInfoRepository.save(paymentInfo);
     }
 }

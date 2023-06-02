@@ -190,3 +190,30 @@ document.querySelector(".modalContainer").addEventListener("click", function(eve
         this.style.display = "none";
     }
 });
+
+let payment_card_imgs = document.querySelectorAll('.card-icons img');
+payment_card_imgs.querySelector('#paypal-payment').add;
+payment_card_imgs.forEach((img) => {
+    img.addEventListener('click', () => {
+        payment_card_imgs.forEach((img) => {
+            img.classList.remove('active');
+        });
+        img.classList.add('active');
+        if (img.id === 'paypal-payment') {
+            fetch("/paypalPayment/makePayment", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => response.json()) // Parse the response as JSON
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    });
+});

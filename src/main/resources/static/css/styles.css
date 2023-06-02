@@ -451,14 +451,25 @@ span.material-symbols-outlined {
 #paymentModal .modalContent .right-side h1{
     font-size: 1rem;
     text-align: left;
-    margin-bottom: 0.3rem;
+    margin-bottom: 2rem;
 }
 .card-icons{
     display: flex;
     justify-content: space-evenly;
+    margin-bottom: 2rem;
 }
 .card-icons img{
     width: 12rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.card-icons img:hover{
+    transform: scale(1.1);
+}
+.card-icons img.active{
+    transform: scale(1.1);
+    box-shadow: rgba(100, 100, 111, 0.5) 0px 7px 29px 0px;
+    border-radius: 15%;
 }
 
 .right-side {
@@ -665,5 +676,11 @@ span.material-symbols-outlined {
     display: inline-block;
     margin-right: .2rem;
     color: green;
+}
+#card-element{
+    margin: 3rem 0;
+}
+#card-holder-name{
+    margin-top: 1rem;
 }
 
