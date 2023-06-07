@@ -78,6 +78,7 @@ const getChatResponse = async (incomingChatDiv) => {
         })
         .catch(error => {
             // Handle any errors
+            console.log(error)
             pElement.textContent = 'Sorry, I am not able to process your request at the moment. Please try again later.';
             pElement.style.color = 'red';
             divElement.innerHTML = pElement;
