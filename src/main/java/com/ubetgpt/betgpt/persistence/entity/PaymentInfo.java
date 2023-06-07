@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "payment_info")
 public class PaymentInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String paymentMode;
     private String transactionId;

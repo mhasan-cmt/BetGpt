@@ -32,8 +32,7 @@
         <div class="left-side"></div>
         <div class="right-side">
             <h1>Hi There!<br> Welcome to betGPT</h1>
-            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span>Sign in with
-                Google
+            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span><a th:href="@{/oauth2/authorization/google}">Sign in with Google</a>
             </button>
             <div class="separator"> or</div>
             <form>
@@ -112,6 +111,8 @@
             </div>
             <div class="nav-buttons">
                 <ul>
+                    <li><a href="/logout" onclick="openSignInModal()" class="button button-secondary">Logout </a></li>
+                    <li><a href="#" onclick="openSignInModal()" class="button button-secondary"><p th:text="${userDetails}"></p> </a></li>
                     <li><a href="#" onclick="openSignInModal()" class="button button-secondary">Sign in</a></li>
                     <li><a href="#" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
                 </ul>
