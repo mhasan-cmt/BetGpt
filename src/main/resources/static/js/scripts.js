@@ -6,6 +6,7 @@ const deleteButton = document.querySelector('#delete-btn');
 
 let userText = null;
 const initialHeight = chatInput.scrollHeight;
+
 function typeWriter(container, text, speed) {
     var i = 0;
 
@@ -66,7 +67,7 @@ const getChatResponse = async (incomingChatDiv) => {
             // Handle the response data
             incomingChatDiv.querySelector('.typing-animation').remove();
             // add a line break before dan's response
-            pElement =  markdownToHtml(data.choices[0].message.content.trim())
+            pElement = markdownToHtml(data.choices[0].message.content.trim())
             divElement.innerHTML = pElement;
             divElement.classList.add('chat-response-div');
             incomingChatDiv.querySelector('.chat-details').appendChild(divElement);
@@ -176,7 +177,7 @@ const openSignInModal = () => {
     document.getElementById("signInModal").style.display = "block";
 };
 const closeSignInModal = () => {
-document.getElementById("signInModal").style.display = "none";
+    document.getElementById("signInModal").style.display = "none";
 };
 
 const closePaymentModal = () => {
@@ -185,35 +186,68 @@ const closePaymentModal = () => {
 const openPaymentModal = () => {
     document.getElementById("paymentModal").style.display = "block";
 };
-document.querySelector(".modalContainer").addEventListener("click", function(event) {
+document.querySelector(".modalContainer").addEventListener("click", function (event) {
     if (event.target === this) {
         this.style.display = "none";
     }
 });
 
 let payment_card_imgs = document.querySelectorAll('.card-icons img');
-payment_card_imgs.querySelector('#paypal-payment').add;
 payment_card_imgs.forEach((img) => {
     img.addEventListener('click', () => {
         payment_card_imgs.forEach((img) => {
             img.classList.remove('active');
         });
         img.classList.add('active');
-        if (img.id === 'paypal-payment') {
-            fetch("/paypalPayment/makePayment", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            })
-                .then(response => response.json()) // Parse the response as JSON
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
     });
 });
+
+const btnProceedPayment = document.querySelector('#btn-proceed-payment');
+const btnReversePayment = document.querySelector('#btn-reverse-payment');
+const firstStep = document.querySelector('#first-step');
+const secondStep = document.querySelector('#second-step-stripe');
+secondStep.style.display = 'none';
+btnProceedPayment.addEventListener('click', () => {
+    let paymentMethod = document.querySelector('.card-icons img.active').id;
+    if (paymentMethod === 'paypal-payment') {
+        var userResult = function(result) {
+            if (result === 1) {
+                console.log("The user confirmed!")
+            } else {
+                console.log('The user did not confirm!');
+            }
+        }
+        const subscribePackage = $('input[name=plan]:checked').val() === 'basic' ? 'Monthly' : 'Yearly';
+        toggleModal(`You are trying to subscribe for ${subscribePackage} package with paypal, are you sure?`, userResult);
+    }else{
+        firstStep.style.display = 'none';
+        secondStep.style.display = 'block';
+    }
+});
+
+btnReversePayment.addEventListener('click', () => {
+    firstStep.style.display = 'block';
+    secondStep.style.display = 'none';
+});
+
+function toggleModal(text, callback) {
+
+    $wrapper = $('<div id="modal-wrapper"></div>').appendTo('body');
+
+    $modal = $('<div id="modal-confirmation"><div id="modal-header"><h3><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Confirm</h3><span data-confirm=0 class="modal-action" id="modal-close"><i class="fa fa-times" aria-hidden="true"></i></span></div><div id="modal-content"><p>' + text + '</p></div><div id="modal-buttons"><button class="modal-action" data-confirm=0 id="modal-button-no">No</button><button class="modal-action" data-confirm=1 id="modal-button-yes">Yes</button></div></div>').appendTo($wrapper);
+
+    setTimeout(function() {
+        $wrapper.addClass('active');
+    }, 100);
+
+    $wrapper.find('.modal-action').click(function() {
+        var result = $(this).data('confirm');
+        $wrapper.removeClass('active').delay(500).queue(function() {
+            $wrapper.remove();
+            callback(result);
+        });
+    });
+
+}
+
+
