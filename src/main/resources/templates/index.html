@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" dir="1tr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="1tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content=" " width="device-width" , initial-scale="1.0"/>
@@ -33,7 +34,8 @@
         <div class="left-side"></div>
         <div class="right-side">
             <h1>Hi There!<br> Welcome to betGPT</h1>
-            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span><a th:href="@{/oauth2/authorization/google}">Sign in with Google</a>
+            <button class="google-signin button btn-100"><span> <img src="/img/icons/google.png"/></span><a
+                    th:href="@{/oauth2/authorization/google}">Sign in with Google</a>
             </button>
             <div class="separator"> or</div>
             <form>
@@ -93,23 +95,24 @@
                     <img id="paypal-payment" src="/img/paypal.png" alt="paypal"/>
                 </div>
                 <div class="arrow-btn-holder">
-                    <button id="btn-proceed-payment"><span class="material-symbols-outlined">arrow_forward</span></button>
+                    <button id="btn-proceed-payment"><span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
                 </div>
             </div>
             <div id="second-step-stripe">
                 <div class="arrow-btn-holder stripe">
                     <button id="btn-reverse-payment"><span class="material-symbols-outlined">arrow_back</span></button>
                 </div>
-                            <div class="separator"> Card Information </div>
-                            <form id="card-payment-form">
-                                <input id="api-key" type="hidden" th:value="${stripePublicKey}">
-                                <label>Card Holder Name</label>
-                                <input type="text" id="card-holder-name" placeholder="Name on Credit/debit card" required>
-                                <div class="w-100" id="card-element">
-                                    <!-- A Stripe Element will be inserted here. -->
-                                </div>
-                                <button type="submit" id="btn-card-pay" class="button btn-100 pay-btn">Pay Now</button>
-                            </form>
+                <div class="separator"> Card Information</div>
+                <form id="card-payment-form">
+                    <input id="api-key" type="hidden" th:value="${stripePublicKey}">
+                    <label>Card Holder Name</label>
+                    <input type="text" id="card-holder-name" placeholder="Name on Credit/debit card" required>
+                    <div class="w-100" id="card-element">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+                    <button type="submit" id="btn-card-pay" class="button btn-100 pay-btn">Pay Now</button>
+                </form>
             </div>
         </div>
     </div>
@@ -123,10 +126,17 @@
             </div>
             <div class="nav-buttons">
                 <ul>
-                    <li><a href="/logout" onclick="openSignInModal()" class="button button-secondary">Logout </a></li>
-                    <li><a href="#" onclick="openSignInModal()" class="button button-secondary"><p th:text="${userDetails}"></p> </a></li>
-                    <li><a href="#" onclick="openSignInModal()" class="button button-secondary">Sign in</a></li>
-                    <li><a href="#" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
+                    <th:block sec:authorize="!isFullyAuthenticated()">
+                        <li><a href="#" sec:authorize="!isFullyAuthenticated()" onclick="openSignInModal()"
+                               class="button button-secondary">Sign in</a></li>
+                    </th:block>
+                    <th:block sec:authorize="isFullyAuthenticated()">
+                        <li><a href="#" class="button button-secondary"><p
+                                th:text="${userDetails}"></p></a></li>
+                        <li><a href="/logout" sec:authorize="isFullyAuthenticated()" class="button button-secondary">Logout</a>
+                        </li>
+                        <li><a href="#" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
+                    </th:block>
                 </ul>
             </div>
         </div>
