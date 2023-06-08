@@ -131,7 +131,7 @@
                                class="button button-secondary">Sign in</a></li>
                     </th:block>
                     <th:block sec:authorize="isFullyAuthenticated()">
-                        <li><a href="#" class="button button-secondary"><p
+                        <li><a href="#" class="button button-secondary"><p class="mb-0"
                                 th:text="${userDetails}"></p></a></li>
                         <li><a href="/logout" sec:authorize="isFullyAuthenticated()" class="button button-secondary">Logout</a>
                         </li>
