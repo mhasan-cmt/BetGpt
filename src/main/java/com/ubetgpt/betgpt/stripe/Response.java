@@ -1,4 +1,4 @@
-package com.ubetgpt.betgpt.model;
+package com.ubetgpt.betgpt.stripe;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import lombok.ToString;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString
+@NoArgsConstructor
 public class Response {
     private boolean status;
     private String details;
