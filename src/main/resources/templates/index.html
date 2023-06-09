@@ -136,7 +136,7 @@
                         <li><a href="/logout" sec:authorize="isFullyAuthenticated()" class="button button-secondary">Logout</a>
                         </li>
                     </th:block>
-                        <li><a href="#" th:if="${paid == true}" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
+                        <li><a href="#" th:if="${paid == false}" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
                 </ul>
             </div>
         </div>
