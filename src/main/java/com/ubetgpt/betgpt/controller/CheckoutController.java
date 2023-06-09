@@ -1,13 +1,20 @@
-package com.ubetgpt.betgpt.paypal;
+package com.ubetgpt.betgpt.controller;
 
+import com.ubetgpt.betgpt.paypal.PayPalHttpClient;
 import com.ubetgpt.betgpt.persistence.entity.Order;
 import com.ubetgpt.betgpt.persistence.repository.OrderDAO;
 import com.ubetgpt.betgpt.paypal.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,6 +29,9 @@ public class CheckoutController {
 
     private final PayPalHttpClient payPalHttpClient;
     private final OrderDAO orderDAO;
+
+    @Value("${stripe.keys.public}")
+    private String stripePublicKey;
 
     @Autowired
     public CheckoutController(PayPalHttpClient payPalHttpClient, OrderDAO orderDAO) {
@@ -63,7 +73,19 @@ public class CheckoutController {
     }
 
     @GetMapping(value = "/success")
-    public String paymentSuccess(HttpServletRequest request) {
+    public String paymentSuccess(HttpServletRequest request, Model model) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        model.addAttribute("stripePublicKey",stripePublicKey);
+        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
+            model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
+            Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
+            model.addAttribute("paid", order!=null);
+        } else {
+            User user = (User) securityContext.getAuthentication().getPrincipal();
+//            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
+//            model.addAttribute("userDetails", users.getName());
+        }
         var orderId = request.getParameter("token");
         var out = orderDAO.findByOrderId(orderId);
         out.setOrderStatus(OrderStatus.APPROVED.toString());

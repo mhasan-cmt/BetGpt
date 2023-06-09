@@ -37,7 +37,18 @@ public class MainController {
 
     @GetMapping
     public String home(Model model){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
         model.addAttribute("stripePublicKey",stripePublicKey);
+        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
+            model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
+            Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
+            model.addAttribute("paid", order!=null);
+        } else {
+            User user = (User) securityContext.getAuthentication().getPrincipal();
+//            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
+//            model.addAttribute("userDetails", users.getName());
+        }
         return "index";
     }
 
