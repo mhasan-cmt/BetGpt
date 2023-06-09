@@ -47,6 +47,8 @@ $(function () {
                     function (data) {
                         card.clear();
                         $('#card-holder-name').val('');
+                        closePaymentModal();
+                        location.reload();
                     }, 'json');
             }
         });
