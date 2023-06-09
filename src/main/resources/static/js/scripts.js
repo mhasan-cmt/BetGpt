@@ -214,49 +214,14 @@ btnProceedPayment.addEventListener('click', () => {
         this.disabled = true;
         var userResult = function(result) {
             if (result === 1) {
-                var json = {
-                    "id": "78D095349F677761D",
-                    "status": "CREATED",
-                    "links": [
-                        {
-                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/78D095349F677761D",
-                            "rel": "self",
-                            "method": "GET"
-                        },
-                        {
-                            "href": "https://www.sandbox.paypal.com/checkoutnow?token=78D095349F677761D",
-                            "rel": "approve",
-                            "method": "GET"
-                        },
-                        {
-                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/78D095349F677761D",
-                            "rel": "update",
-                            "method": "PATCH"
-                        },
-                        {
-                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/78D095349F677761D/capture",
-                            "rel": "capture",
-                            "method": "POST"
-                        }
-                    ]
-                };
-                const requestData = {
-                    "intent": "CAPTURE",
-                    "purchase_units": [
-                        {
-                            "amount": {
-                                "currency_code": "USD",
-                                "value": "11.0"
-                            }
-                        }
-                    ]
-                };
                 fetch("/checkout", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestData)
+                    body: JSON.stringify({
+                        subscriptionPackage: $('input[name=plan]:checked').val(),
+                    })
                 })
                     .then(function(response) {
                         if (response.ok) {

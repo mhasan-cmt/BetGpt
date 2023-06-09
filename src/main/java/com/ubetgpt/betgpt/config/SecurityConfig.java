@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +39,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/", "/login", "/oauth/**", "/home").permitAll()
+                                .requestMatchers("/", "/login", "/oauth/**", "/home", "/checkout", "/checkout/**","/stripePayment", "/stripePayment/**").permitAll()
 //                                .requestMatchers("/home").hasRole("USER")
                                 .anyRequest().authenticated()
                 )

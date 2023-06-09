@@ -23,7 +23,7 @@ $(function () {
     });
 
     // Handle form submission.
-    var form = document.getElementById('payment-form');
+    var form = document.getElementById('card-payment-form');
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         // handle payment
@@ -35,19 +35,20 @@ $(function () {
         stripe.createToken(card).then(function (result) {
             if (result.error) {
                 // Inform the user if there was an error.
-                var errorElement = document.getElementById('card-errors');
+                let errorElement = document.getElementById('card-errors');
                 errorElement.textContent = result.error.message;
+                console.log(result.error.message);
             } else {
                 // Send the token to your server.
-                var token = result.token.id;
-                var email = $('#email').val();
-                var amount = $('#amount').val();
-                $.post("/stripePayment/makePayment", {email: email, amount: amount, token: token},
+                let token = result.token.id;
+                let plan = $('input[name=plan]:checked').val() === 'basic' ? 'Monthly' : 'Yearly';
+                let cardHolderName = $('#card-holder-name').val();
+                $.post("/stripePayment/makePayment", {cardHolderName: cardHolderName, token: token, plan: plan},
                     function (data) {
-                        $('#msg').text(data.details).css('color:green');
                         card.clear();
-                        $('#amount').val('');
-                        $('#email').val('');
+                        $('#card-holder-name').val('');
+                        closePaymentModal();
+                        location.reload();
                     }, 'json');
             }
         });

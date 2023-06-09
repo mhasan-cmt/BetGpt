@@ -1,13 +1,14 @@
 package com.ubetgpt.betgpt.controller;
 
 import com.ubetgpt.betgpt.model.chat.*;
+import com.ubetgpt.betgpt.persistence.entity.Order;
+import com.ubetgpt.betgpt.persistence.repository.OrderDAO;
 import com.ubetgpt.betgpt.service.ChatCompletionService;
-import com.ubetgpt.betgpt.service.StripePaymentService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -23,7 +24,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class MainController {
-    Logger logger = org.slf4j.LoggerFactory.getLogger(MainController.class);
+    @Resource
+    private OrderDAO orderDAO;
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(MainController.class);
     @Resource
     private ChatCompletionService chatCompletionService;
     @Value("${openai.model}")
@@ -34,24 +37,26 @@ public class MainController {
     private String stripePublicKey;
 
     @GetMapping
-    public String home(Model model){
+    public String home(Model model, Authentication authentication){
         model.addAttribute("stripePublicKey",stripePublicKey);
+        if(authentication!= null && authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+            model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
+            Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
+            model.addAttribute("paid", order!=null);
+        }else if(authentication!= null && authentication.getPrincipal() instanceof User){
+            User user = (User) authentication.getPrincipal();
+//            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
+            model.addAttribute("userDetails", user.getUsername());
+            Order order = orderDAO.findByUserEmail(user.getUsername());
+            model.addAttribute("paid", order!=null);
+        }
         return "index";
     }
 
     @GetMapping("home")
-    public String homePage(Model model){
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
-            model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
-        } else {
-            User user = (User) securityContext.getAuthentication().getPrincipal();
-//            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
-//            model.addAttribute("userDetails", users.getName());
-        }
-
-        return "index";
+    public String homePage(Model model, Authentication authentication){
+        return home(model, authentication);
     }
 
     @PostMapping("chat")

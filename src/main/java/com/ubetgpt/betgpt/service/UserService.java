@@ -15,7 +15,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    Optional<User> getByUserEmail(String username) {
+    public Optional<User> getByUserEmail(String username) {
         return userRepository.findByEmail(username);
     }
 
