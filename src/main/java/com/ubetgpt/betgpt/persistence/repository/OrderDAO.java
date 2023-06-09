@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderDAO extends JpaRepository<Order, Long> {
     Order findByOrderId(String paypalOrderId);
+
+    Order findByUserEmail(String email);
 }

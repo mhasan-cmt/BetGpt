@@ -25,5 +25,6 @@ public class Order {
     private LocalDate createdAt;
     @Column(name = "expiredAt")
     private LocalDate expired_at;
-//    private User user; FIXME: Add User to Order
+    @OneToOne
+    private User user;
 }
