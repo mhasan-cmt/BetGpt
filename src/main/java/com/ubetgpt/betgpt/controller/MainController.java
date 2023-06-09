@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -36,38 +37,24 @@ public class MainController {
     private String stripePublicKey;
 
     @GetMapping
-    public String home(Model model){
-        SecurityContext securityContext = SecurityContextHolder.getContext();
+    public String home(Model model, Authentication authentication){
         model.addAttribute("stripePublicKey",stripePublicKey);
-        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
+        if(authentication!= null && authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
             model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
             Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
             model.addAttribute("paid", order!=null);
-        } else {
-            User user = (User) securityContext.getAuthentication().getPrincipal();
+        }else if(authentication!= null && authentication.getPrincipal() instanceof User){
+            User user = (User) authentication.getPrincipal();
 //            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
-//            model.addAttribute("userDetails", users.getName());
+            model.addAttribute("userDetails", user.getUsername());
         }
         return "index";
     }
 
     @GetMapping("home")
-    public String homePage(Model model){
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        model.addAttribute("stripePublicKey",stripePublicKey);
-        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
-            model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
-            Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
-            model.addAttribute("paid", order!=null);
-        } else {
-            User user = (User) securityContext.getAuthentication().getPrincipal();
-//            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
-//            model.addAttribute("userDetails", users.getName());
-        }
-
-        return "index";
+    public String homePage(Model model, Authentication authentication){
+        return home(model, authentication);
     }
 
     @PostMapping("chat")
