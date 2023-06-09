@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/", "/login", "/oauth/**", "/home").permitAll()
+                                .requestMatchers("/", "/login", "/oauth/**", "/home", "/checkout", "/checkout/**","/stripePayment", "/stripePayment/**").permitAll()
 //                                .requestMatchers("/home").hasRole("USER")
                                 .anyRequest().authenticated()
                 )

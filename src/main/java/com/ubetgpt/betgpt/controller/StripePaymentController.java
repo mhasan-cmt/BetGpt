@@ -1,7 +1,11 @@
 package com.ubetgpt.betgpt.controller;
 
+import com.ubetgpt.betgpt.paypal.dto.OrderStatus;
+import com.ubetgpt.betgpt.persistence.repository.OrderDAO;
 import com.ubetgpt.betgpt.stripe.Response;
 import com.ubetgpt.betgpt.stripe.StripeService;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,11 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/stripePayment")
+@Slf4j
 public class StripePaymentController {
     @Value("${stripe.keys.public}")
     private String API_PUBLIC_KEY;
 
     private StripeService stripeService;
+    @Resource
+    private OrderDAO orderDAO;
 
     public StripePaymentController(StripeService stripeService) {
         this.stripeService = stripeService;
@@ -38,7 +45,9 @@ public class StripePaymentController {
         if (subscriptionId == null) {
             return new Response(false, "An error occurred while trying to create subscription");
         }
-
+        var out = orderDAO.findByOrderId(subscriptionId);
+        out.setOrderStatus(OrderStatus.APPROVED.toString());
+        orderDAO.save(out);
         return new Response(true, "Success! your subscription id is " + subscriptionId);
     }
 

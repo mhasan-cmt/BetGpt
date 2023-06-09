@@ -240,23 +240,14 @@ btnProceedPayment.addEventListener('click', () => {
                         }
                     ]
                 };
-                const requestData = {
-                    "intent": "CAPTURE",
-                    "purchase_units": [
-                        {
-                            "amount": {
-                                "currency_code": "USD",
-                                "value": "11.0"
-                            }
-                        }
-                    ]
-                };
                 fetch("/checkout", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestData)
+                    body: JSON.stringify({
+                        subscriptionPackage: $('input[name=plan]:checked').val(),
+                    })
                 })
                     .then(function(response) {
                         if (response.ok) {
