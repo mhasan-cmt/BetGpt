@@ -4,11 +4,14 @@ import com.ubetgpt.betgpt.paypal.PayPalHttpClient;
 import com.ubetgpt.betgpt.persistence.entity.Order;
 import com.ubetgpt.betgpt.persistence.repository.OrderDAO;
 import com.ubetgpt.betgpt.paypal.dto.*;
+import com.ubetgpt.betgpt.service.UserService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -26,6 +29,8 @@ import java.util.Objects;
 @RequestMapping(value = "/checkout")
 @Slf4j
 public class CheckoutController {
+    @Resource
+    private UserService userService;
 
     private final PayPalHttpClient payPalHttpClient;
     private final OrderDAO orderDAO;
@@ -41,7 +46,7 @@ public class CheckoutController {
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<OrderResponseDTO> checkout(@RequestBody OrderRequest orderRequest) throws Exception {
+    public ResponseEntity<OrderResponseDTO> checkout(@RequestBody OrderRequest orderRequest, Authentication authentication) throws Exception {
         var orderDTO = new OrderDTO();
         orderDTO.setIntent(OrderIntent.CAPTURE);
         orderDTO.setPurchaseUnits(List.of(new PurchaseUnit(MoneyDTO.builder()
@@ -60,6 +65,15 @@ public class CheckoutController {
         entity.setOrderStatus(orderResponse.getStatus().toString());
         entity.setCreatedAt(LocalDate.now());
         entity.setSubscriptionPackage(orderRequest.subscriptionPackage());
+        com.ubetgpt.betgpt.persistence.entity.User user1 = null;
+        if(authentication!= null && authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+            user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
+        }else if(authentication!= null && authentication.getPrincipal() instanceof User){
+            User user = (User) authentication.getPrincipal();
+            user1 = userService.getByUserEmail(user.getUsername()).orElseThrow();
+        }
+        entity.setUser(user1);
         entity.setExpired_at(Objects.equals(orderRequest.subscriptionPackage(), "basic") ?  LocalDate.now().plusMonths(1) : LocalDate.now().plusYears(1));
         orderResponse.getLinks().forEach(linkDTO -> {
             if (linkDTO.getRel().equals("approve")) {

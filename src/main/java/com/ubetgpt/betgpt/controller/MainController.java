@@ -48,6 +48,8 @@ public class MainController {
             User user = (User) authentication.getPrincipal();
 //            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
             model.addAttribute("userDetails", user.getUsername());
+            Order order = orderDAO.findByUserEmail(user.getUsername());
+            model.addAttribute("paid", order!=null);
         }
         return "index";
     }
