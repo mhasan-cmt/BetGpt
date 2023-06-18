@@ -166,6 +166,24 @@ sendButton.addEventListener('click', handleOutgoingChat);
 
 deleteButton.addEventListener('click', () => {
     if (confirm('Are you sure to delete all chats?')) {
+        fetch("/chat", {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json()) // Parse the response as JSON
+            .then(data => {
+                if (data === 'success') {
+                    console.log('success')
+                }else {
+                    console.log('failed')
+                }
+            })
+            .catch(error => {
+                // Handle any errors
+                console.log(error)
+            });
         localStorage.removeItem('chat-history');
         loadDataFromLocalStorage();
     }

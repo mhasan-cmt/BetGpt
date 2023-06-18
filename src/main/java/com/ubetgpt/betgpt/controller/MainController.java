@@ -77,12 +77,12 @@ public class MainController {
 
         List<ChatHistory> chatHistory = chatHistoryService.getChatHistoryByUser(user1.getId());
 
-        if (chatHistory!=null && chatHistory.size()>0) {
-             chatHistory.forEach(chatHistory1 -> {
-                 messages.add(new ChatMessage("user", chatHistory1.getUserMessage()));
-                 messages.add(new ChatMessage("assistant", chatHistory1.getGptMessage()));
-             });
-         }
+        if (chatHistory != null && chatHistory.size() > 0) {
+            chatHistory.forEach(chatHistory1 -> {
+                messages.add(new ChatMessage("user", chatHistory1.getUserMessage()));
+                messages.add(new ChatMessage("assistant", chatHistory1.getGptMessage()));
+            });
+        }
 
         messages.add(new ChatMessage("user", prompt));
         request.setMessages(messages);
@@ -109,5 +109,19 @@ public class MainController {
         chatHistoryService.saveChatHistory(chatHistory1);
         logger.info("Response: {}", response.toString());
         return response;
+    }
+
+    @DeleteMapping("/chat")
+    @ResponseBody
+    public String deleteChatHistory(Authentication authentication) {
+        DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+        com.ubetgpt.betgpt.persistence.entity.User user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
+        try {
+            chatHistoryService.deleteChatHistoryByUser(user1.getId());
+        } catch (Exception e) {
+            logger.error("Error deleting chat history: {}", e.getMessage());
+            return "failed";
+        }
+        return "success";
     }
 }
