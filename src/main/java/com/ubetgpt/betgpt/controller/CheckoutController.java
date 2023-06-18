@@ -33,6 +33,8 @@ public class CheckoutController {
     private UserService userService;
 
     private final PayPalHttpClient payPalHttpClient;
+    @Autowired
+    private MainController mainController;
     private final OrderDAO orderDAO;
 
     @Value("${stripe.keys.public}")
@@ -87,16 +89,15 @@ public class CheckoutController {
     }
 
     @GetMapping(value = "/success")
-    public String paymentSuccess(HttpServletRequest request, Model model) {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
+    public String paymentSuccess(HttpServletRequest request, Model model, Authentication authenticationl) {
         model.addAttribute("stripePublicKey",stripePublicKey);
-        if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
+        if(authenticationl.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authenticationl.getPrincipal();
             model.addAttribute("userDetails", user.getAttribute("name")!= null ?user.getAttribute("name"):user.getAttribute("login"));
             Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
             model.addAttribute("paid", order!=null);
         } else {
-            User user = (User) securityContext.getAuthentication().getPrincipal();
+            User user = (User) authenticationl.getPrincipal();
 //            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());
 //            model.addAttribute("userDetails", users.getName());
         }
@@ -104,6 +105,6 @@ public class CheckoutController {
         var out = orderDAO.findByOrderId(orderId);
         out.setOrderStatus(OrderStatus.APPROVED.toString());
         orderDAO.save(out);
-        return "index";
+        return mainController.home(model, authenticationl);
     }
 }

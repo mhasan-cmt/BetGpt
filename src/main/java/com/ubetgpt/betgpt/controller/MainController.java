@@ -1,6 +1,7 @@
 package com.ubetgpt.betgpt.controller;
 
 import com.ubetgpt.betgpt.model.chat.*;
+import com.ubetgpt.betgpt.paypal.dto.OrderStatus;
 import com.ubetgpt.betgpt.persistence.entity.ChatHistory;
 import com.ubetgpt.betgpt.persistence.entity.Order;
 import com.ubetgpt.betgpt.persistence.repository.OrderDAO;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -49,7 +51,15 @@ public class MainController {
             DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
             model.addAttribute("userDetails", user.getAttribute("name") != null ? user.getAttribute("name") : user.getAttribute("login"));
             Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
-            model.addAttribute("paid", order != null);
+            if (order != null && Objects.equals(order.getOrderStatus(), OrderStatus.CREATED.toString())) {
+                model.addAttribute("orderStatus", order.getOrderStatus());
+                model.addAttribute("payLink", order.getApproveUrl());
+            } else if (order != null) {
+                model.addAttribute("orderStatus", order.getOrderStatus());
+            }
+            else {
+                model.addAttribute("orderStatus", null);
+            }
         } else if (authentication != null && authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
 //            com.oauth.implementation.model.User users = userRepo.findByEmail(user.getUsername());

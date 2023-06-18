@@ -56,7 +56,7 @@
                 <h1>Upgrade<br>Your Account</h1>
                 <p>Unlimited Predictions. Ask anything, <br> and Tom will always answer</p>
             </div>
-            <div class="bottom">
+            <div class="bottom" th:if="${orderStatus!='CREATED'}">
                 <div class="plans">
                     <label class="plan basic-plan" for="basic">
                         <input checked type="radio" name="plan" id="basic" value="basic"/>
@@ -85,7 +85,7 @@
                 </div>
             </div>
         </div>
-        <div class="right-side">
+        <div class="right-side" th:if="${orderStatus!='CREATED'}">
             <h1>Payment Details</h1>
             <div id="first-step">
                 <p class="separator">Select a Payment Method</p>
@@ -115,6 +115,9 @@
                 </form>
             </div>
         </div>
+        <div class="right-side" th:if="${orderStatus=='CREATED'}">
+            <span>Please Confirm your payment via this <a th:href="${payLink}">link</a> </span>
+        </div>
     </div>
 </div>
 
@@ -135,8 +138,8 @@
                                 th:text="${userDetails}"></p></a></li>
                         <li><a href="/logout" sec:authorize="isFullyAuthenticated()" class="button button-secondary">Logout</a>
                         </li>
+                        <li><a href="#" th:if="${orderStatus != 'APPROVED' || orderStatus == null}" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
                     </th:block>
-                        <li><a href="#" th:if="${paid == false}" onclick="openPaymentModal()" class="button button-primary">Upgrade</a></li>
                 </ul>
             </div>
         </div>
