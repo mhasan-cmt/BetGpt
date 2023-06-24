@@ -61,29 +61,26 @@ public class CheckoutController {
         appContext.setLandingPage(PaymentLandingPage.BILLING);
         orderDTO.setApplicationContext(appContext);
         var orderResponse = payPalHttpClient.createOrder(orderDTO);
-
-        var entity = new Order();
+        com.ubetgpt.betgpt.persistence.entity.User user1 = null;
+        if(authentication!= null && authentication.getPrincipal() instanceof DefaultOAuth2User user) {
+            user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
+        }
+        var entity = orderDAO.findByUserEmail(user1.getEmail())!=null ? orderDAO.findByUserEmail(user1.getEmail()) : new Order();
+        entity = orderDAO.findByUserEmail(user1.getEmail());
         entity.setOrderId(orderResponse.getId());
         entity.setOrderStatus(orderResponse.getStatus().toString());
         entity.setCreatedAt(LocalDate.now());
         entity.setSubscriptionPackage(orderRequest.subscriptionPackage());
-        com.ubetgpt.betgpt.persistence.entity.User user1 = null;
-        if(authentication!= null && authentication.getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
-            user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
-        }else if(authentication!= null && authentication.getPrincipal() instanceof User){
-            User user = (User) authentication.getPrincipal();
-            user1 = userService.getByUserEmail(user.getUsername()).orElseThrow();
-        }
         entity.setUser(user1);
         entity.setExpired_at(Objects.equals(orderRequest.subscriptionPackage(), "basic") ?  LocalDate.now().plusMonths(1) : LocalDate.now().plusYears(1));
+        Order finalEntity = entity;
         orderResponse.getLinks().forEach(linkDTO -> {
             if (linkDTO.getRel().equals("approve")) {
-                entity.setApproveUrl(linkDTO.getHref());
+                finalEntity.setApproveUrl(linkDTO.getHref());
             }
         });
 
-        var out = orderDAO.save(entity);
+        var out = orderDAO.save(finalEntity);
         log.info("Saved order: {}", out);
         return ResponseEntity.ok(orderResponse);
     }

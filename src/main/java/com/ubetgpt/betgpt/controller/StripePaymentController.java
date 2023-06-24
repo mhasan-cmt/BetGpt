@@ -46,7 +46,7 @@ public class StripePaymentController {
             return new Response(false, "An error occurred while trying to create customer");
         }
 
-        String subscriptionId = stripeService.createSubscription(customerId, plan);
+        String subscriptionId = stripeService.createSubscription(customerId, plan, authentication);
 
         if (subscriptionId == null) {
             return new Response(false, "An error occurred while trying to create subscription");

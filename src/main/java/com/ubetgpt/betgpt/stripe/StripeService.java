@@ -10,6 +10,8 @@ import jakarta.annotation.Resource;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,11 +54,12 @@ public class StripeService {
 		return id;
 	}
 
-	public String createSubscription(String customerId, String plan) {
+	public String createSubscription(String customerId, String plan, Authentication authentication) {
 
 		String subscriptionId = null;
 
 		try {
+			DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
 			Stripe.apiKey = API_SECRET_KEY;
 
 			Map<String, Object> item = new HashMap<>();
@@ -76,7 +79,10 @@ public class StripeService {
 			params.put("items", items);
 
 			Subscription subscription = Subscription.create(params);
-			Order order = new Order();
+			Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
+			if (order==null){
+				order = new Order();
+			}
 			order.setOrderId(subscription.getId());
 			order.setOrderStatus(subscription.getStatus());
 			order.setCreatedAt(LocalDate.now());

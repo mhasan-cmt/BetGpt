@@ -79,11 +79,10 @@ const getChatResponse = async (incomingChatDiv) => {
         .catch(error => {
             // Handle any errors
             console.log(error)
-            pElement.textContent = 'Sorry, I am not able to process your request at the moment. Please try again later.';
-            pElement.style.color = 'red';
+            pElement = markdownToHtml('Please Sign in the site or upgrade your account');
             divElement.innerHTML = pElement;
             incomingChatDiv.querySelector('.chat-details').appendChild(divElement);
-            localStorage.setItem('chat-history', chatContainer.innerHTML);
+            // localStorage.setItem('chat-history', chatContainer.innerHTML);
             chatInput.value = '';
             chatInput.readOnly = false;
         });

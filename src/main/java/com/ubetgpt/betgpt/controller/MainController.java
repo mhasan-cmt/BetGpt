@@ -56,8 +56,7 @@ public class MainController {
                 model.addAttribute("payLink", order.getApproveUrl());
             } else if (order != null) {
                 model.addAttribute("orderStatus", order.getOrderStatus());
-            }
-            else {
+            } else {
                 model.addAttribute("orderStatus", null);
             }
         } else if (authentication != null && authentication.getPrincipal() instanceof User) {
@@ -78,12 +77,28 @@ public class MainController {
     @PostMapping("chat")
     @ResponseBody
     public ChatResponse chatPage(@RequestBody String prompt, Authentication authentication) {
+        DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+        com.ubetgpt.betgpt.persistence.entity.User user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
+        Order order = orderDAO.findByUserEmail(user.getAttribute("email"));
+        ChatResponse response;
+        if (order == null || !order.getOrderStatus().equals(OrderStatus.APPROVED.toString())) {
+            ArrayList<Choice> choices = new ArrayList<>();
+            Message message = new Message("user", "Please Upgrade Your Account to continue chat!");
+            choices.add(new Choice(message, "stop", 0));
+            response = ChatResponse.builder()
+                    .id("cmpl-3QJ5")
+                    .created(1627777777)
+                    .model("davinci:2020-05-03")
+                    .object("text_completion")
+                    .usage(new Usage())
+                    .choices(choices).build();
+            return response;
+        }
+
         ChatCompletionRequest request = new ChatCompletionRequest();
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("user", danModeMsg));
         request.setModel(model);
-        DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
-        com.ubetgpt.betgpt.persistence.entity.User user1 = userService.getByUserEmail(user.getAttribute("email")).orElseThrow();
 
         List<ChatHistory> chatHistory = chatHistoryService.getChatHistoryByUser(user1.getId());
 
@@ -102,17 +117,7 @@ public class MainController {
         chatHistory1.setUser(user1);
 
 
-        ChatResponse response = chatCompletionService.createChatCompletion(request);
-//        ArrayList<Choice> choices = new ArrayList<>();
-//        Message message = new Message("user", "GPT: Hi there! Dan: Hi I am Dan!");
-//        choices.add(new Choice(message, "stop", 0));
-//        ChatResponse response = ChatResponse.builder()
-//                .id("cmpl-3QJ5")
-//                .created(1627777777)
-//                .model("davinci:2020-05-03")
-//                .object("text_completion")
-//                .usage(new Usage())
-//                .choices(choices).build();
+        response = chatCompletionService.createChatCompletion(request);
 
         chatHistory1.setGptMessage(response.getChoices().get(0).getMessage().content);
         chatHistory1.setCreated(LocalDateTime.now());

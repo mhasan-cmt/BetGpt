@@ -56,7 +56,7 @@
                 <h1>Upgrade<br>Your Account</h1>
                 <p>Unlimited Predictions. Ask anything, <br> and Tom will always answer</p>
             </div>
-            <div class="bottom" th:if="${orderStatus!='CREATED'}">
+            <div class="bottom">
                 <div class="plans">
                     <label class="plan basic-plan" for="basic">
                         <input checked type="radio" name="plan" id="basic" value="basic"/>
@@ -85,7 +85,7 @@
                 </div>
             </div>
         </div>
-        <div class="right-side" th:if="${orderStatus!='CREATED'}">
+        <div class="right-side">
             <h1>Payment Details</h1>
             <div id="first-step">
                 <p class="separator">Select a Payment Method</p>
@@ -114,9 +114,6 @@
                     <button type="submit" id="btn-card-pay" class="button btn-100 pay-btn">Pay Now</button>
                 </form>
             </div>
-        </div>
-        <div class="right-side" th:if="${orderStatus=='CREATED'}">
-            <span>Please Confirm your payment via this <a th:href="${payLink}">link</a> </span>
         </div>
     </div>
 </div>
